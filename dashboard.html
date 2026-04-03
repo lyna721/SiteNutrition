@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tableau de bord patient</title>
+</head>
+<body>
+
+<h2>Bienvenue dans votre espace patient</h2>
+
+<h3>Votre plan alimentaire :</h3>
+<ul id="plan"></ul>
+
+<button onclick="logout()">Se déconnecter</button>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.15.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.15.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.15.0/firebase-firestore.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "TON_API_KEY",
+    authDomain: "TON_PROJET.firebaseapp.com",
+    projectId: "TON_PROJET",
+    storageBucket: "TON_PROJET.appspot.com",
+    messagingSenderId: "ID",
+    appId: "ID"
+  };
+
+  const app = firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  // Vérifie si l'utilisateur est connecté
+  auth.onAuthStateChanged(user => {
+    if(user) {
+        const docRef = db.collection("patients").doc(user.email);
+        docRef.get().then(doc => {
+            if(doc.exists) {
+                document.getElementById("plan").innerHTML = "<li>" + doc.data().plan + "</li>";
+            }
+        });
+    } else {
+        window.location.href = "login.html";
+    }
+  });
+
+  function logout() {
+    auth.signOut().then(() => {
+        window.location.href = "login.html";
+    });
+  }
+</script>
+
+</body>
+</html>
